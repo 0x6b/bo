@@ -22,7 +22,7 @@ Options:
 i.e.
 
 ```console
-$ bo github
+$ bo sc
 ```
 
 or, run it without an argument to select a channel from a list interactively:
@@ -36,14 +36,19 @@ $ so
 Place your configuration file at `$XDG_CONFIG_HOME/so/config.toml` or provide the path using the `--config` option.
 
 ```toml
-# You need to explicitly set the name of the default browser, such as "Google Chrome" or "Firefox",
-# instead of relying on the system default.
+# You need to explicitly set the name of the default browser,
+# such as "Google Chrome" or "Firefox", instead of relying on
+# the system default.
 default_browser = "firefox"
 
+# Optional aliases for bookmarks
 [aliases]
+gh = "github"
 mf = "moneyforward"
+sc = "shortcut"
 
 [bookmarks]
+github = { url = "https://github.com/0x6b" }
 moneyforward = { url = "https://attendance.moneyforward.com/admin/workflow_requests/waiting" }
 
 # Alternate browser can be specified with the `browser` key
