@@ -58,6 +58,28 @@ impl BookmarkManager {
         open::with(&url_config.url, browser).map_err(Into::into)
     }
 
+    /// Open the URL matching the given name, with the rest of the arguments as the query.
+    pub fn search(&self, args: &[String]) -> anyhow::Result<()> {
+        let first = args.first().unwrap(); // Safe to unwrap because `args` is not empty. Should be checked in the caller.
+        let rest = args.iter().skip(1).cloned().collect::<Vec<_>>(); // rest as an argument to the URL
+
+        let url_config = self
+            .get_url_config(first)
+            .ok_or_else(|| anyhow::anyhow!("Bookmark not found: {first}"))?;
+
+        let browser = match &url_config.browser {
+            Some(browser) => browser,
+            None => self.default_browser.as_str(),
+        };
+
+        if url_config.url.contains("{query}") {
+            let url = url_config.url.replace("{query}", &rest.join(" "));
+            open::with(url, browser).map_err(Into::into)
+        } else {
+            self.open(first)
+        }
+    }
+
     /// Open an interactive prompt to select a bookmark to open.
     pub fn open_prompt(&self) -> anyhow::Result<()> {
         let options = SkimOptionsBuilder::default()
