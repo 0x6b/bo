@@ -1,0 +1,31 @@
+[package]
+name = "bo"
+version = "0.1.0"
+edition = "2021"
+description = "CLI bookmark manager"
+
+[dependencies]
+# Error handling
+anyhow = "1.0.95"
+
+# Command line parsing
+clap = { version = "4.5.23", features = ["derive", "wrap_help", "env"] }
+
+# Open URI
+open = "5.3.1"
+
+# Ser/de
+serde = { version = "1.0.217", features = ["derive"] }
+toml = "0.8.19"
+
+# Configuration directory
+xdg = "2.5.2"
+
+# Interactive selection
+skim = "0.15.7"
+
+# Async runtime
+tokio = { version = "1.42.0", features = ["fs", "io-std", "io-util", "rt-multi-thread", "macros"] }
+
+# Regex
+regex = "1.11.1"
