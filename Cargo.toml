@@ -1,6 +1,6 @@
 [package]
 name = "bo"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "CLI bookmark manager"
 
@@ -23,6 +23,9 @@ xdg = "2.5.2"
 
 # Interactive selection
 skim = "0.15.7"
+
+# Tilde expansion
+shellexpand = "3.1.0"
 
 # Async runtime
 tokio = { version = "1.42.0", features = ["fs", "io-std", "io-util", "rt-multi-thread", "macros"] }
