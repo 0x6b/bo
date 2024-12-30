@@ -93,11 +93,10 @@ async fn generate_fish_completion(manager: &BookmarkManager, path: &str) -> anyh
         .await?;
 
     for (name, url_config) in manager.bookmarks.iter() {
+        let url = simplify_url(&url_config.url);
         out.write_all(
             format!(
-                "complete -c bo -f -n \"not __fish_seen_subcommand_from completion\" -a \"{}\" -d \"{}\"\n",
-                name,
-                url_config.url.replace("https://", "").replace("http://", "").replace("www.", ""),
+                "complete -c bo -f -n \"not __fish_seen_subcommand_from completion\" -a \"{name}\" -d \"{url}\"\n",
             )
                 .as_bytes(),
         )
@@ -106,15 +105,18 @@ async fn generate_fish_completion(manager: &BookmarkManager, path: &str) -> anyh
 
     if let Some(aliases) = manager.aliases.as_ref() {
         for (alias, name) in aliases.iter() {
-            out.write_all(
-                format!(
-                    "complete -c bo -f -n \"not __fish_seen_subcommand_from completion\" -a \"{}\" -d \"{}\"\n",
-                    alias,
-                    manager.bookmarks.get(name).unwrap().url.replace("https://", "").replace("http://", "").replace("www.", ""),
+            if let Some(url_config) = manager.bookmarks.get(name) {
+                let url = simplify_url(&url_config.url);
+                out.write_all(
+                    format!(
+                        "complete -c bo -f -n \"not __fish_seen_subcommand_from completion\" -a \"{alias}\" -d \"{url}\"\n",
+                    )
+                        .as_bytes(),
                 )
-                    .as_bytes(),
-            )
-                .await?;
+                    .await?
+            } else {
+                eprintln!("Warning: alias '{alias}' points to a non-existent bookmark: '{name}'. Skipping.");
+            }
         }
     }
 
@@ -122,4 +124,8 @@ async fn generate_fish_completion(manager: &BookmarkManager, path: &str) -> anyh
     println!("Auto completion file updated: {}", file.display());
 
     Ok(())
+}
+
+fn simplify_url(url: &str) -> String {
+    url.replace("https://", "").replace("http://", "").replace("www.", "")
 }
