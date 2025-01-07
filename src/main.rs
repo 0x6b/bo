@@ -17,7 +17,7 @@ pub struct Args {
     #[arg()]
     pub args: Option<Vec<String>>,
 
-    /// Path to the configuration file. Defaults to $XDG_CONFIG_HOME/bo/config.toml.
+    /// Path to the configuration file. Defaults to $XDG_CONFIG_HOME/bo/config.yaml.
     #[arg(short, long)]
     pub config: Option<PathBuf>,
 
@@ -27,6 +27,19 @@ pub struct Args {
 
 #[derive(Debug, Parser)]
 pub enum Command {
+    /// Add a new bookmark.
+    Add {
+        /// The name of the bookmark.
+        name: String,
+
+        /// The URL of the bookmark.
+        url: String,
+
+        /// The browser to use. If not provided, the default browser will be used.
+        #[arg(short, long)]
+        browser: Option<String>,
+    },
+
     /// Edit the configuration file with $EDITOR.
     Edit,
 
@@ -72,6 +85,10 @@ async fn main() -> anyhow::Result<()> {
     let manager = BookmarkManager::from(config).await?;
 
     match command {
+        Some(Command::Add { name, url, browser }) => {
+            manager.add(name, url, browser.as_deref()).await?;
+            Ok(())
+        }
         Some(Command::Edit) => {
             match process::Command::new(env::var("EDITOR").unwrap_or_else(|_| "vi".to_string()))
                 .arg(&manager.path)

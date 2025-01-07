@@ -9,6 +9,7 @@ $ bo --help
 Usage: bo [OPTIONS] [ARGS]... [COMMAND]
 
 Commands:
+  add                  Add a new bookmark
   edit                 Edit the configuration file with $EDITOR
   generate-completion  Generate a shell completion script. At the moment, only
                        `fish` is supported
@@ -23,7 +24,7 @@ Arguments:
 
 Options:
   -c, --config <CONFIG>  Path to the configuration file. Defaults to
-                         $XDG_CONFIG_HOME/bo/config.toml
+                         $XDG_CONFIG_HOME/bo/config.yaml
   -h, --help             Print help
   -V, --version          Print version
 ```
@@ -48,31 +49,35 @@ $ so
 
 ## Configuration
 
-Place your configuration file at `$XDG_CONFIG_HOME/so/config.toml` or provide the path using the `--config` option.
+Place your configuration file at `$XDG_CONFIG_HOME/so/config.yaml` or provide the path using the `--config` option.
 
-```toml
+```yaml
 # You need to explicitly set the name of the default browser,
 # such as "Google Chrome" or "Firefox", instead of relying on
 # the system default.
-default_browser = "firefox"
+default_browser: firefox
 
 # Optional aliases for bookmarks
-[aliases]
-gh = "github"
-mf = "moneyforward"
-sc = "shortcut"
-d = "drive"
-
-[bookmarks]
-github = { url = "https://github.com/0x6b" }
-moneyforward = { url = "https://attendance.moneyforward.com/admin/workflow_requests/waiting" }
-
-# Alternate browser can be specified with the `browser` key
-shortcut = { url = "https://app.shortcut.com/dashboard", browser = "Google Chrome" }
-
-# The `{query}` placeholder will be replaced with the rest of the command line
-# arguments after the bookmark name
-drive = { url = "https://drive.google.com/drive/search?q={query}", browser = "Google Chrome" }
+aliases:
+  d: drive
+  gh: github
+  mf: moneyforward
+  sc: shortcut
+bookmarks:
+  drive:
+    # Alternate browser can be specified with the `browser` key
+    # arguments after the bookmark name
+    browser: Google Chrome
+    # The `{query}` placeholder will be replaced with the rest
+    # of the command line
+    url: https://drive.google.com/drive/search?q={query}
+  github:
+    url: https://github.com/0x6b
+  moneyforward:
+    url: https://attendance.moneyforward.com/admin/workflow_requests/waiting
+  shortcut:
+    browser: Google Chrome
+    url: https://app.shortcut.com/dashboard
 ```
 
 ## License

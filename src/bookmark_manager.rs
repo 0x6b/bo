@@ -39,10 +39,10 @@ impl BookmarkManager {
         let path = path.unwrap_or_else(|| {
             xdg::BaseDirectories::with_prefix("bo")
                 .unwrap()
-                .place_config_file("config.toml")
+                .place_config_file("config.yaml")
                 .unwrap()
         });
-        let config = toml::from_str::<Config>(&tokio::fs::read_to_string(&path).await?)?;
+        let config = serde_yml::from_str::<Config>(&tokio::fs::read_to_string(&path).await?)?;
 
         Ok((path, config))
     }
@@ -91,14 +91,18 @@ impl BookmarkManager {
             .build()?;
 
         let (tx_item, rx_item): (SkimItemSender, SkimItemReceiver) = unbounded();
-        self.bookmarks.iter().for_each(|(name, url_config)| {
-            let browser = match &url_config.browser {
-                Some(browser) => browser,
-                None => self.default_browser.as_str(),
-            };
+        self.bookmarks
+            .iter()
+            .filter(|(_, url_config)| !url_config.url.contains("{query}"))
+            .for_each(|(name, url_config)| {
+                let browser = match &url_config.browser {
+                    Some(browser) => browser,
+                    None => self.default_browser.as_str(),
+                };
 
-            let _ = tx_item.send(Arc::new(format!("{name}: {} (in {browser})", url_config.url)));
-        });
+                let _ =
+                    tx_item.send(Arc::new(format!("{name}: {} (in {browser})", url_config.url)));
+            });
         drop(tx_item);
 
         match Skim::run_with(&options, Some(rx_item)) {
@@ -108,6 +112,20 @@ impl BookmarkManager {
             }
             _ => Ok(()),
         }
+    }
+
+    pub async fn add(
+        &self,
+        name: String,
+        url: String,
+        browser: Option<&str>,
+    ) -> anyhow::Result<()> {
+        let mut config = self.config.clone();
+        config
+            .bookmarks
+            .insert(name, UrlConfig { url, browser: browser.map(String::from) });
+        tokio::fs::write(&self.path, serde_yml::to_string(&config)?).await?;
+        Ok(())
     }
 
     fn get_url_config(&self, name: &str) -> Option<&UrlConfig> {

@@ -1,6 +1,6 @@
 [package]
 name = "bo"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 description = "CLI bookmark manager"
 
@@ -16,7 +16,7 @@ open = "5.3.1"
 
 # Ser/de
 serde = { version = "1.0.217", features = ["derive"] }
-toml = "0.8.19"
+serde_yml = "0.0.12"
 
 # Configuration directory
 xdg = "2.5.2"
