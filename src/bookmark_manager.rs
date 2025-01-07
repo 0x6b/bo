@@ -9,6 +9,9 @@ use crate::{Config, UrlConfig};
 /// A bookmark manager.
 #[derive(Debug)]
 pub struct BookmarkManager {
+    /// Resolved path to the configuration file.
+    pub path: PathBuf,
+
     /// The configuration.
     config: Config,
 }
@@ -28,8 +31,8 @@ impl BookmarkManager {
     ///
     /// - `config` - Path to the configuration file.
     pub async fn from(config_path: Option<PathBuf>) -> anyhow::Result<Self> {
-        let (_path, config) = Self::parse_config(config_path).await?;
-        Ok(Self { config })
+        let (path, config) = Self::parse_config(config_path).await?;
+        Ok(Self { path, config })
     }
 
     async fn parse_config(path: Option<PathBuf>) -> anyhow::Result<(PathBuf, Config)> {

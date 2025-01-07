@@ -6,15 +6,24 @@ CLI bookmark manager.
 
 ```console
 $ bo --help
-Usage: bo [OPTIONS] [ARGS]...
+Usage: bo [OPTIONS] [ARGS]... [COMMAND]
+
+Commands:
+  edit                 Edit the configuration file with $EDITOR
+  generate-completion  Generate a shell completion script. At the moment, only
+                       `fish` is supported
+  help                 Print this message or the help of the given subcommand(s)
 
 Arguments:
-  [ARGS]...  The name of the bookmark to open. If not provided, a list of available bookmarks will be shown. If multiple strings are
-             given, the first one is used as the bookmark name, and the remaining strings are used as arguments for the bookmark,
-             which will be replaced in the URL `{query}`
+  [ARGS]...  The name of the bookmark to open. If not provided, a list of
+             available bookmarks will be shown. If multiple strings are given,
+             the first one is used as the bookmark name, and the remaining
+             strings are used as arguments for the bookmark, which will be
+             replaced in the URL `{query}`
 
 Options:
-  -c, --config <CONFIG>  Path to the configuration file. Defaults to $XDG_CONFIG_HOME/bo/config.toml
+  -c, --config <CONFIG>  Path to the configuration file. Defaults to
+                         $XDG_CONFIG_HOME/bo/config.toml
   -h, --help             Print help
   -V, --version          Print version
 ```

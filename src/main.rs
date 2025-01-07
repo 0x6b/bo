@@ -1,4 +1,4 @@
-use std::{fmt, fmt::Display, path::PathBuf, str::FromStr};
+use std::{env, fmt, fmt::Display, path::PathBuf, process, str::FromStr};
 
 use bo::BookmarkManager;
 use clap::Parser;
@@ -27,6 +27,9 @@ pub struct Args {
 
 #[derive(Debug, Parser)]
 pub enum Command {
+    /// Edit the configuration file with $EDITOR.
+    Edit,
+
     /// Generate a shell completion script. At the moment, only `fish` is supported.
     GenerateCompletion {
         /// The shell to generate completion scripts for.
@@ -69,6 +72,15 @@ async fn main() -> anyhow::Result<()> {
     let manager = BookmarkManager::from(config).await?;
 
     match command {
+        Some(Command::Edit) => {
+            match process::Command::new(env::var("EDITOR").unwrap_or_else(|_| "vi".to_string()))
+                .arg(&manager.path)
+                .spawn()
+            {
+                Ok(mut child) => child.wait().map(|_| ()).map_err(Into::into),
+                Err(e) => anyhow::bail!("Failed to open editor: {e}"),
+            }
+        }
         Some(Command::GenerateCompletion { shell: _, path }) => {
             generate_fish_completion(&manager, &path).await
         }
